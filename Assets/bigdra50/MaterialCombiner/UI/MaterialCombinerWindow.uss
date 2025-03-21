@@ -1,0 +1,88 @@
+/* MaterialCombinerWindow スタイルシート */
+
+ScrollView {
+    padding: 12px;
+}
+
+.title {
+    -unity-font-style: bold;
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+
+.section-header {
+    -unity-font-style: bold;
+    margin-top: 16px;
+    margin-bottom: 8px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(0, 0, 0, 0.2);
+    padding-bottom: 4px;
+}
+
+HelpBox {
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+
+Toggle {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+TextField {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+SliderInt {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+#shader-selector {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    flex-direction: row;
+    align-items: center;
+}
+
+#shader-button {
+    min-width: 200px;
+    height: 22px;
+    margin-left: 8px;
+}
+
+#child-count {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    padding-left: 16px;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+#custom-property-container {
+    margin-left: 16px;
+    margin-top: 4px;
+}
+
+.process-button {
+    margin-top: 16px;
+    height: 30px;
+    background-color: #4CAF50;
+    color: white;
+    -unity-font-style: bold;
+    border-radius: 4px;
+    transition-duration: 0.2s;
+}
+
+.process-button:hover {
+    background-color: #3e8e41;
+}
+
+.process-button:active {
+    background-color: #367c39;
+}
+
+.process-button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+}

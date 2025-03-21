@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="UnityEngine.UIElements"
+      xmlns:editor="UnityEditor.UIElements"
+      xsi:schemaLocation="
+          UnityEngine.UIElements ../../UIElementsSchema/UnityEngine.UIElements.fixed.xsd
+          UnityEditor.UIElements ../../UIElementsSchema/UnityEditor.UIElements.xsd">
+
+    <ScrollView>
+        <Label text="Material Combiner" class="title" />
+        
+        <!-- 対象オブジェクト -->
+        <Label text="対象オブジェクト" class="section-header" />
+        <HelpBox message="単一または複数のオブジェクトを選択してください。各オブジェクトは個別に処理されます。" 
+                message-type="Info" />
+        <Label name="selection-info" text="オブジェクトが選択されていません" />
+        
+        <Toggle name="recursive-toggle" label="子オブジェクトを再帰的に処理" />
+        <Label name="child-count" text="処理対象の子MeshRendererオブジェクト: 0個" style="display: none;" />
+        
+        <!-- 出力設定 -->
+        <Label text="出力設定" class="section-header" />
+        <TextField name="output-path" label="出力ベースパス" />
+        <Toggle name="timestamp-toggle" label="タイムスタンプフォルダを使用" />
+        <Toggle name="overwrite-toggle" label="上書き防止" />
+        
+        <!-- テクスチャアトラス設定 -->
+        <Label text="テクスチャアトラス設定" class="section-header" />
+        <VisualElement name="atlas-size-container">
+            <!-- PopupFieldはUXMLで直接使えないので、コードで追加 -->
+        </VisualElement>
+        <SliderInt name="padding-slider" label="テクスチャパディング" min-value="0" max-value="8" show-input-field="true" />
+        
+        <!-- シェーダー設定 -->
+        <Label text="シェーダー設定" class="section-header" />
+        <Toggle name="shader-toggle" label="元のシェーダーを使用" />
+        <VisualElement name="shader-selector" style="flex-direction: row; align-items: center;">
+            <Label text="デフォルトシェーダー" style="min-width: 150px;" />
+            <Button name="shader-button" text="シェーダーを選択" />
+        </VisualElement>
+        
+        <!-- テクスチャプロパティ設定 -->
+        <Label text="テクスチャプロパティ設定" class="section-header" />
+        <Toggle name="main-tex-toggle" label="mainTextureを使用" />
+        <VisualElement name="custom-property-container" style="display: none;">
+            <TextField name="custom-property-field" label="テクスチャプロパティ名" />
+            <HelpBox message="mainTextureの代わりに、指定したプロパティからテクスチャを取得します。" 
+                    message-type="Info" />
+        </VisualElement>
+        
+        <!-- 処理ボタン -->
+        <Button name="process-button" text="選択オブジェクトを処理" class="process-button" />
+    </ScrollView>
+    
+</UXML>
