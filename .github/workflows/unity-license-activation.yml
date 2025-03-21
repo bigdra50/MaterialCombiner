@@ -1,0 +1,43 @@
+name: Unity License Activation
+
+on:
+  workflow_dispatch:  # 手動で実行可能
+    inputs:
+      unity_version:
+        description: 'Unity Version'
+        required: true
+        default: '2022.3.42f1'
+
+jobs:
+  activation:
+    name: Request Unity License Activation
+    runs-on: ubuntu-latest
+    
+    steps:
+    # リポジトリをチェックアウト
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Unity Licenseリクエストステップ
+    - name: Request manual activation file
+      id: getManualLicenseFile
+      uses: game-ci/unity-request-activation-file@v2
+      with:
+        unityVersion: ${{ github.event.inputs.unity_version || '2022.3.42f1' }}
+
+    # アクティベーションファイルをアーティファクトとしてアップロード
+    - name: Upload manual activation file
+      uses: actions/upload-artifact@v4
+      with:
+        name: Manual Activation File
+        path: ${{ steps.getManualLicenseFile.outputs.filePath }}
+
+    # アクティベーション手順の説明を出力
+    - name: Print Manual Activation Instructions
+      run: |
+        echo "アクティベーションファイルの取得が完了しました。"
+        echo "以下の手順に従ってください："
+        echo "1. 上記のアーティファクトからライセンスファイル（.ulf）をダウンロード"
+        echo "2. Unity Hub → マニュアルアクティベーション → ライセンスファイルをアップロード"
+        echo "3. 取得したライセンスを GitHub Secrets の UNITY_LICENSE に設定"
+        cat ${{ steps.getManualLicenseFile.outputs.filePath }}
