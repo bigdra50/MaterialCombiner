@@ -155,7 +155,7 @@ namespace MaterialCombiner.Tests.Editor
             rendererChild2.sharedMaterials = new Material[] { new Material(Shader.Find("Standard")) };
 
             // Act
-            int count = MaterialCombinerFunctions.CountMeshRenderersInChildren(parent);
+            int count = MaterialCombiner.Editor.MaterialCombiner.CountMeshRenderersInChildren(parent);
 
             // Assert
             Assert.AreEqual(1, count, "複数のマテリアルを持つ子MeshRendererの数が正しくありません");
@@ -204,8 +204,8 @@ namespace MaterialCombiner.Tests.Editor
 
             // Act
             var selectedObjects = new GameObject[] { parent1, parent2 };
-            var result1 = MaterialCombinerFunctions.GetObjectsToProcess(selectedObjects, false);
-            var result2 = MaterialCombinerFunctions.GetObjectsToProcess(selectedObjects, true);
+            var result1 = MaterialCombiner.Editor.MaterialCombiner.GetObjectsToProcess(selectedObjects, false);
+            var result2 = MaterialCombiner.Editor.MaterialCombiner.GetObjectsToProcess(selectedObjects, true);
 
             // Assert
             Assert.AreEqual(2, result1.Count, "再帰的でない場合、選択されたオブジェクトだけを処理する必要があります");
@@ -234,8 +234,8 @@ namespace MaterialCombiner.Tests.Editor
             string meshName = "Test Mesh With Spaces!";
 
             // Act
-            string path1 = MaterialCombinerFunctions.GenerateOutputPath(basePath, meshName, true, false);
-            string path2 = MaterialCombinerFunctions.GenerateOutputPath(basePath, meshName, false, false);
+            string path1 = PathUtility.GenerateOutputPath(basePath, meshName, true, false);
+            string path2 = PathUtility.GenerateOutputPath(basePath, meshName, false, false);
 
             // Assert
             StringAssert.Contains("Test_Mesh_With_Spaces_", path1, "安全なメッシュ名の変換と、タイムスタンプの付加が正しく行われていません");
@@ -260,7 +260,7 @@ namespace MaterialCombiner.Tests.Editor
             }
 
             // Act
-            string path = MaterialCombinerFunctions.GenerateOutputPath(basePath, meshName, false, true);
+            string path = PathUtility.GenerateOutputPath(basePath, meshName, false, true);
 
             // Assert
             Assert.AreEqual("Assets/Test/TestMesh_1", path, "上書き防止が有効な場合、フォルダ名に数字を追加する必要があります");
@@ -285,7 +285,7 @@ namespace MaterialCombiner.Tests.Editor
             texture.Apply();
 
             // Act
-            Texture2D result = MaterialCombinerFunctions.MakeTextureReadable(texture);
+            Texture2D result = TextureProcessing.MakeTextureReadable(texture);
 
             // Assert
             Assert.IsNotNull(result, "読み取り可能なテクスチャを返す必要があります");
@@ -304,7 +304,7 @@ namespace MaterialCombiner.Tests.Editor
             material.mainTexture = texture;
 
             // Act
-            var getTextureFunc = MaterialCombinerFunctions.GetTextureFromMaterial;
+            var getTextureFunc = TextureProcessing.GetTextureFromMaterial;
             Texture2D result = getTextureFunc(material, true, "_MainTex");
 
             // Assert
@@ -326,7 +326,7 @@ namespace MaterialCombiner.Tests.Editor
             material.SetTexture("_EmissionMap", emissionTexture);
 
             // Act
-            var getTextureFunc = MaterialCombinerFunctions.GetTextureFromMaterial;
+            var getTextureFunc = TextureProcessing.GetTextureFromMaterial;
             Texture2D result = getTextureFunc(material, false, "_EmissionMap");
 
             // Assert
@@ -352,7 +352,7 @@ namespace MaterialCombiner.Tests.Editor
             material.mainTexture = texture;
 
             // Act
-            var extractorFunc = MaterialCombinerFunctions.CreateTextureExtractor(config);
+            var extractorFunc = TextureProcessing.CreateTextureExtractor(config);
             Texture2D result = extractorFunc(material);
 
             // Assert
@@ -380,7 +380,7 @@ namespace MaterialCombiner.Tests.Editor
             );
 
             // Act
-            var result = MaterialCombinerFunctions.ProcessSingleObject(_testObject, config);
+            var result = MaterialCombiner.Editor.MaterialCombiner.ProcessSingleObject(_testObject, config);
 
             // ファイルが書き込まれるまで1フレーム待機
             yield return null;

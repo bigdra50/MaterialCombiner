@@ -266,7 +266,7 @@ namespace MaterialCombiner.Editor
         {
             if (childCountLabel == null) return;
 
-            var childCount = _targetObjects.Sum(MaterialCombinerFunctions.CountMeshRenderersInChildren);
+            var childCount = _targetObjects.Sum(MaterialCombiner.CountMeshRenderersInChildren);
             childCountLabel.text = $"処理対象の子MeshRendererオブジェクト: {childCount}個";
         }
 
@@ -311,7 +311,7 @@ namespace MaterialCombiner.Editor
 
         private void ProcessSelectedObjects()
         {
-            var result = MaterialCombinerFunctions.ProcessMultipleObjects(_targetObjects, _config);
+            var result = MaterialCombiner.ProcessMultipleObjects(_targetObjects, _config);
 
             var successCount = result.Item1;
             var errorMessages = result.Item2;
