@@ -7,7 +7,7 @@ MaterialCombiner is a Unity editor extension that combines multiple materials on
 - Unity 2022.3 or higher
 
 ## Installation
-
+Install directly from GitHub using the Unity Package Manager:  
 ```
 https://github.com/bigdra50/MaterialCombiner.git?path=Assets/bigdra50/MaterialCombiner
 ```
