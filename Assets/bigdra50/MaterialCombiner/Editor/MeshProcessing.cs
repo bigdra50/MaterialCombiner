@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -171,56 +172,105 @@ namespace MaterialCombiner.Editor
 
             return combinedMaterial;
         }
-
         /// <summary>
         /// マテリアルのプロパティをコピー
         /// </summary>
-        public static void CopyMaterialProperties(Material source, Material destination)
+public static void CopyMaterialProperties(Material source, Material destination)
+{
+    if (source == null || destination == null)
+        return;
+
+    Debug.Log($"マテリアルプロパティをコピー: {source.name} -> {destination.name}");
+    Debug.Log($"元のシェーダー: {source.shader.name}, 対象のシェーダー: {destination.shader.name}");
+
+    // 色関連のプロパティを先にコピー（特に重要なプロパティ）
+    if (source.HasProperty("_Color") && destination.HasProperty("_Color"))
+    {
+        Color sourceColor = source.GetColor("_Color");
+        destination.SetColor("_Color", sourceColor);
+        Debug.Log($"_Color プロパティをコピー: {sourceColor}");
+    }
+
+    // シェーダーのプロパティ数を取得
+    var propertyCount = ShaderUtil.GetPropertyCount(source.shader);
+    Debug.Log($"シェーダープロパティ数: {propertyCount}");
+
+    // 各プロパティをチェック
+    int copiedCount = 0;
+    for (var i = 0; i < propertyCount; i++)
+    {
+        var propertyName = ShaderUtil.GetPropertyName(source.shader, i);
+        var propertyType = ShaderUtil.GetPropertyType(source.shader, i);
+
+        // 対象のマテリアルに同じプロパティがあるか確認
+        if (!destination.HasProperty(propertyName))
         {
-            if (source == null || destination == null)
-                return;
-
-            // シェーダーのプロパティ数を取得
-            var propertyCount = ShaderUtil.GetPropertyCount(source.shader);
-
-            // 各プロパティをチェック
-            for (var i = 0; i < propertyCount; i++)
-            {
-                var propertyName = ShaderUtil.GetPropertyName(source.shader, i);
-                var propertyType = ShaderUtil.GetPropertyType(source.shader, i);
-
-                // 対象のマテリアルに同じプロパティがあるか確認
-                if (!destination.HasProperty(propertyName))
-                    continue;
-
-                // プロパティタイプに応じて値をコピー
-                switch (propertyType)
-                {
-                    case ShaderUtil.ShaderPropertyType.Color:
-                        destination.SetColor(propertyName, source.GetColor(propertyName));
-                        break;
-                    case ShaderUtil.ShaderPropertyType.Float:
-                    case ShaderUtil.ShaderPropertyType.Range:
-                        destination.SetFloat(propertyName, source.GetFloat(propertyName));
-                        break;
-                    case ShaderUtil.ShaderPropertyType.Vector:
-                        destination.SetVector(propertyName, source.GetVector(propertyName));
-                        break;
-                    case ShaderUtil.ShaderPropertyType.TexEnv:
-                        // テクスチャは別途処理するのでスキップ
-                        break;
-                }
-            }
-
-            // シェーダーキーワードもコピー
-            foreach (var keyword in source.shaderKeywords)
-            {
-                if (!destination.IsKeywordEnabled(keyword))
-                {
-                    destination.EnableKeyword(keyword);
-                }
-            }
+            Debug.LogWarning($"プロパティ '{propertyName}' は対象マテリアルにありません");
+            continue;
         }
+
+        // プロパティタイプに応じて値をコピー
+        try
+        {
+            switch (propertyType)
+            {
+                case ShaderUtil.ShaderPropertyType.Color:
+                    Color color = source.GetColor(propertyName);
+                    destination.SetColor(propertyName, color);
+                    Debug.Log($"カラープロパティをコピー: {propertyName} = {color}");
+                    break;
+                case ShaderUtil.ShaderPropertyType.Float:
+                case ShaderUtil.ShaderPropertyType.Range:
+                    float floatValue = source.GetFloat(propertyName);
+                    destination.SetFloat(propertyName, floatValue);
+                    Debug.Log($"数値プロパティをコピー: {propertyName} = {floatValue}");
+                    break;
+                case ShaderUtil.ShaderPropertyType.Vector:
+                    Vector4 vector = source.GetVector(propertyName);
+                    destination.SetVector(propertyName, vector);
+                    Debug.Log($"ベクトルプロパティをコピー: {propertyName} = {vector}");
+                    break;
+                case ShaderUtil.ShaderPropertyType.TexEnv:
+                    // テクスチャは個別に処理するのでスキップ
+                    Debug.Log($"テクスチャプロパティはスキップ: {propertyName}");
+                    break;
+                default:
+                    Debug.LogWarning($"未対応のプロパティタイプ: {propertyType} for {propertyName}");
+                    break;
+            }
+            copiedCount++;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"プロパティ '{propertyName}' のコピー中にエラー: {e.Message}");
+        }
+    }
+
+    // レンダリングモードとカラースペース関連の設定をコピー
+    if (source.HasProperty("_Mode") && destination.HasProperty("_Mode"))
+    {
+        destination.SetFloat("_Mode", source.GetFloat("_Mode"));
+        Debug.Log($"レンダリングモードをコピー: {source.GetFloat("_Mode")}");
+    }
+
+    // シェーダーキーワードもコピー
+    string[] keywords = source.shaderKeywords;
+    Debug.Log($"シェーダーキーワード数: {keywords.Length}");
+    foreach (var keyword in keywords)
+    {
+        if (!destination.IsKeywordEnabled(keyword))
+        {
+            destination.EnableKeyword(keyword);
+            Debug.Log($"シェーダーキーワードを有効化: {keyword}");
+        }
+    }
+
+    Debug.Log($"マテリアルプロパティコピー完了: {copiedCount}個のプロパティをコピー");
+    
+    // レンダリング設定のコピー
+    destination.renderQueue = source.renderQueue;
+    Debug.Log($"レンダーキューをコピー: {source.renderQueue}");
+}
 
         /// <summary>
         /// シェーダーを取得
