@@ -1,5 +1,7 @@
 # MaterialCombiner
 
+[日本語版 / Japanese](docs/README_jp.md)
+
 ## About
 MaterialCombiner is a Unity editor extension that combines multiple materials on objects into a single material.  
 
