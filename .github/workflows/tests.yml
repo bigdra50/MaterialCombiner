@@ -1,4 +1,4 @@
-name: Unity Tests on Self-Hosted Runner
+name: Unity Tests
 
 on:
   push:
@@ -6,34 +6,42 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  UNITY_EDITOR_PATH: C:\Users\ryu19\opt\unity\2022.3.42f1\Editor\Unity.exe
-
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     
     steps:
     # リポジトリをチェックアウト
     - uses: actions/checkout@v4
+      with:
+        lfs: true
 
     # Unityライブラリのキャッシュ
     - uses: actions/cache@v4
       with:
         path: Library
-        key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+        key: Library-ubuntu-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
         restore-keys: |
-          Library-
+          Library-ubuntu-
 
     # Unityテストの実行
     - name: Run Unity Tests
-      run: |
-        "%UNITY_EDITOR_PATH%" -quit -batchmode -projectPath "${{ github.workspace }}" -runTests -testPlatform EditMode -testResults "test-results.xml"
-      shell: cmd
+      uses: game-ci/unity-test-runner@v4
+      env:
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      with:
+        projectPath: .
+        unityVersion: 2022.3.42f1
+        testMode: EditMode
+        artifactsPath: test-results
+        githubToken: ${{ secrets.GITHUB_TOKEN }}
 
     # テスト結果のアップロード
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: test-results
-        path: test-results.xml
+        path: test-results
